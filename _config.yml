@@ -1,5 +1,9 @@
+baseurl: "/jumpwire-docs" # the subpath of your site, e.g. /blog
+url: "https://extragood-io.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 remote_theme: pmarsceill/just-the-docs
 logo: "/assets/images/jumpwire-logo.svg"
+
+exclude: ["LICENSE.txt", "README.md"]
 
 # Footer content
 # appears at the bottom of every page's main content
