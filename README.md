@@ -1,3 +1,9 @@
+---
+layout: default
+title: Welcome
+nav_order: 1
+---
+
 ## Welcome to JumpWire
 
 JumpWire is an integration platform that connects internal data to external/vendor APIs. It can be used to create connections between various systems for the purpose of transferring data between them. JumpWire calls these connections "flows", and they represent a series of steps for extracting, transforming and loading data between systems. Examples of systems to connect include SaaS or vendor APIs, internal databases or data warehouses, streaming data including change data capture, or data from internal tools or services.
