@@ -4,20 +4,22 @@ title: Flows
 nav_order: 2
 ---
 
-## Flows
+# Flows
 
 A "flow" is a series of stages for moving data between systems. It begins with a trigger and always terminates, typically after transforming data from the trigger and storing or publishing that data. However there may be intermediary stages that hydrate or expand the data by querying other systems. Stages can also fan-out (e.g. map) or combine (e.g. reduce) the results of prior stage executions, allowing for efficient computations. The most formal definition of a "flow" is that of a directed acyclical graph ([DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph)), as flows must be fully traversable, not contain cycles between stages, and fully terminate.
 
+![](../assets/images/Flows.svg)
+
 The behavior of each stage defaults to buffering inputs within a given bounds, retry on errors with backoff, collect metrics on runtime stats, and collect logs from stdout/err.
 
-### Flow runs and triggers
+## Flow runs and triggers
 Every flow defines a trigger for starting a "run" of the flow. Flow "runs" comprise of an execution of the flow stages for the initial input from the flow's trigger. Triggers can be manual, but most often will be automated.
 
 Trigger stages are pre-packaged and follow the same behavior as any other stage, as described below. The most generic trigger stage is a webhook trigger, which can be configured with a specific subdomain and path. This will trigger the start of a run on each HTTP request, with input that matches the stage props (see below for more information about stage props). Other triggers can start a flow run based on streaming data, changes to a database, or events generated from third-party systems.
 
 Fow runs must complete, either in success or error, and each flow run is recorded and timed by default.
 
-### Flow stages
+## Flow stages
 Stages are discreet units that encapsulate work or logic that transform data mid-flight during a flow, or extract and combine additional data into a flow in addition to the trigger.
 
 For example, suppose there is the following sequence defined as a flow:
@@ -33,7 +35,7 @@ For example, suppose there is the following sequence defined as a flow:
 
 For example, suppose there is a flow that begins when a new user requests information from a marketing site, and ends with that user's information in a data lake and a CRM for follow up by analysts and sales. The flow would be triggered by an form submission from a website, as a result of a new event created in the marketing engine, Hubspot. The flow takes the company name and email address from the form input, splits it into a domain name, validates the domain name against a database of existing customers, pulls an monthly activity report for the existing customers (if any), and uploads the result into the CRM, Salesforce and the internal data lake. The results of the flow will be used by the sales team for outreach and analysts/PMs for refining marketing strategy.
 
-### Flow Definition
+## Flow Definition
 
 All flows can be defined by YAML that corresponds to the following schema. At the top level, a flow is designated by a name and list of stages:
 

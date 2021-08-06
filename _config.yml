@@ -4,6 +4,7 @@ remote_theme: pmarsceill/just-the-docs
 logo: "/assets/images/jumpwire-logo.svg"
 
 exclude: ["LICENSE.txt", "README.md"]
+color_scheme: dark
 
 # Footer content
 # appears at the bottom of every page's main content
