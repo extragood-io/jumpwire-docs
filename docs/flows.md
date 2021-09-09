@@ -17,7 +17,7 @@ Every flow defines a trigger for starting a "run" of the flow. Flow "runs" compr
 
 Trigger stages are pre-packaged and follow the same behavior as any other stage, as described below. The most generic trigger stage is a webhook trigger, which can be configured with a specific subdomain and path. This will trigger the start of a run on each HTTP request, with input that matches the stage props (see below for more information about stage props). Other triggers can start a flow run based on streaming data, changes to a database, or events generated from third-party systems.
 
-Fow runs must complete, either in success or error, and each flow run is recorded and timed by default.
+Flow runs must complete, either in success or error, and each flow run is recorded and timed by default.
 
 ## Flow stages
 Stages are discreet units that encapsulate work or logic that transform data mid-flight during a flow, or extract and combine additional data into a flow in addition to the trigger.
