@@ -12,7 +12,7 @@ Use Secrets to store any values that should be externalized from individual Flow
 
 ### Secret syntax
 
-Secrets are referenced by their name, which must be unique across an installation. To reference a secret, use the syntax `${secret.SECRET_NAME}` in place of the value you wish to substitute with the secret.
+Secrets are referenced by their **name**, prefaced with `secret.`, and wrapped in `${...}`. Secret names should be unique across an installation. The full syntax should look like `${secret.SECRET_NAME}` in place of the value you wish to substitute with the secret.
 
 For example, the following Flow stage uses an externalized host name for sending data to an external API:
 
