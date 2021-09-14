@@ -5,13 +5,14 @@ parent: Flows
 nav_order: 1
 ---
 
-## Table of contents
-
-{: .no_toc .text-delta }
-
-- TOC
-
-{: toc}
+<details open markdown="block">
+  <summary>
+    Table of contents
+  </summary>
+  {: .text-delta }
+1. TOC
+{:toc}
+</details>
 
 # Flow stages
 
