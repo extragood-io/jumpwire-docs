@@ -84,11 +84,9 @@ The result and timing of each stage is available for every Flow run, by clicking
 
 ![](../../assets/images/flow_run_stages.png)
 
-## List of supported stages
+## Built-in Triggers
 
-### Triggers
-
-#### Kinesis
+### Kinesis
 
 This trigger stage will tail a given Kinesis data stream and trigger a Flow run for each record read from the stream. It subscribes to all shards of the stream.
 
@@ -108,7 +106,7 @@ The `config` accepts the following values
     - ...
 ```
 
-#### Manual
+### Manual
 
 This trigger can be invoked manually to start a Flow run.
 
@@ -123,7 +121,7 @@ No `config` block is necessary for this stage.
     - ...
 ```
 
-#### UDP
+### UDP
 
 This trigger can be invoked by receiving a UDP packet to start a Flow run with the contents of the UDP request.
 
@@ -141,7 +139,7 @@ The `config` block accepts the following values
     - ...
 ```
 
-#### Webhook
+### Webhook
 
 This trigger will receive HTTPs requests to start a Flow run from each request, and take data from the request body.
 
@@ -159,9 +157,9 @@ The `config` block accepts the following values
     - ...
 ```
 
-### Built-in Stages
+## Built-in Stages
 
-#### Delay
+### Delay
 
 This stage will forward the data received as input, after pausing for a specified amount of time.
 
@@ -179,7 +177,7 @@ The `config` block accepts the following values
     - ...
 ```
 
-#### Error
+### Error
 
 A stage that generates an error whenever it receives events. Useful for debugging.
 
@@ -219,7 +217,7 @@ The `config` block is optional, with the following values. If no `config` block 
     - ...
 ```
 
-#### Data filter
+### Data filter
 
 This stage will filter out data that matches a given criteria, only data that does _not_ match the criteria will be passed to the next stage.
 
@@ -243,7 +241,7 @@ The `config` block accepts the following values
     - ...
 ```
 
-#### JSON decode
+### JSON decode
 
 This stage will take binary input and decode it into a JSON string.
 
@@ -251,7 +249,7 @@ The `action` for this stage is `json_decode`.
 
 The `config` block is not necessary for this stage
 
-#### Put Kinesis record
+### Put Kinesis record
 
 This stage will take an input and put it onto a Kinesis stream as a new record. _NOTE_ this stage is distinct from the previous trigger stage, also called "kinesis".
 
@@ -271,7 +269,7 @@ The `config` block accepts the following values
     - ...
 ```
 
-#### Merge data
+### Merge data
 
 Add static or secret data into the JSON input and send the combined JSON object as output.
 
@@ -291,7 +289,7 @@ The `config` block accepts the following values
     - ...
 ```
 
-#### Noop
+### Noop
 
 A stage that takes no action, and simply forwards along the input.
 
@@ -306,7 +304,7 @@ The `config` block is not necessary for this stage
     - ...
 ```
 
-#### Webhook
+### Webhook
 
 A stage that sends its input to a specified URL in an HTTPs request.
 
