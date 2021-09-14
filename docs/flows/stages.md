@@ -7,48 +7,321 @@ nav_order: 1
 
 # Flow stages
 
-Stages are discreet units that encapsulate work or logic that transform data mid-flight during a flow, or extract and combine additional data into a flow in addition to the trigger.
+Flows are divided into individual steps called "stages". Stages are discreet units that encapsulate work or logic to handle data passing through an execution run of a Flow. They execute independently and take input from an external source or from a previous stage's output. JumpWire ships with many built-in stages for common operations, or a stage can run custom JavaScript code.
 
-For example, suppose there is the following sequence defined as a flow:
+Stages can be wired together, with one stage receiving the output of another stage, allowing for composition of complex data handling or transformation logic. A stage will start execution as soon as there is input available to that stage.
 
-1.  Read events from an internal event stream, such as Kinesis, and deserialize into JSON
-2.  Remap each JSON data into a new JSON object, renaming or redacting fields
-3.  Fetch additional data from internal services to append to the object
-4.  Accumulate JSON objects into batches
-5.  Published batched data to a third-party API
+Every Flow will contain a stage that acts as a "trigger", meaning it receives an external input that starts an execution of a Flow run. A stage that contains no list of `out` stages will stop the execution of the run (or branch of the run).
 
-[_ALTERNATIVE EXAMPLE_]
+## Stage YAML definition
 
-For example, suppose there is a flow that begins when a new user requests information from a marketing site, and ends with that user's information in a data lake and a CRM for follow up by analysts and sales. The flow would be triggered by an form submission from a website, as a result of a new event created in the marketing engine, Hubspot. The flow takes the company name and email address from the form input, splits it into a domain name, validates the domain name against a database of existing customers, pulls an monthly activity report for the existing customers (if any), and uploads the result into the CRM, Salesforce and the internal data lake. The results of the flow will be used by the sales team for outreach and analysts/PMs for refining marketing strategy.
+Each stage is defined by a `name`, `action`, `config `and `out`. The `name` and `action` fields are required. A `config` block may be required, depending on the logic of the stage. An `out` list is necessary if there are subsequent stages that should execute on the result of the given stage.
 
-## Flow Definition
+### Name
 
-All flows can be defined by YAML that corresponds to the following schema. At the top level, a flow is designated by a name and list of stages:
+The `name` for a stage is a human-friendly label for the given stage. They must be unique within a flow, contain words, and can be referenced by other stages' `out` parameter.
+
+### Action
+
+The `action` for a stage is a reserved string that corresponds to the kind of logic this stage will perform on the incoming data, and what kind of output this stage will have. You can find a list of all supported stages below, and their corresponding `action` string.
+
+### Config
+
+The `config` block for a stage contains fields specific to the stage action needed for the stage to run. It can contain static values or reference [secrets](secrets). Please refer to the list of stages below for their required configuration.
+
+### Out
+
+The `out` list is a list of names of stages that should receive as their input the output of this stage. This allows stages to be wired together to move data through multiple transformations. There can be multiple stage names listed under `out`, and each of those stages will receive the same output. If no `out` list is present in the stage, this will stop the execution of the run (or branch of the run) once the stage is done. This would be an instance of a "terminal" stage.
+
+### Sample YAML
+
+In the example below, the stage "Decode JSON" decodes binary data into a JSON string sends that JSON string to two subsequent stages, which both receive the JSON as input. The "Decode JSON" stage receives input from a previous stage "Some trigger", that starts the Flow run and gets binary data from an external source.
 
 ```yaml
-name: Publish to Acme API
+name: Handle some JSON like it's hot
 stages:
-  - trigger stage...
-  - transform stage...
-  - fetch stage...
-  - publish stage...
+  - name: Some trigger
+    ...
+    out: Decode JSON
+
+  - name: Decode JSON
+    action: json_decode
+    out:
+    - Subsequent stage name 1
+    - Sebsequent stage name 2
+
+  - name: Subsequent stage name 1
+    ...
+
+  - name: Subsequent stage name 2
+    ...
 ```
 
-Each stage of a flow is configured with a "props" object that corresponds to the shape of the data the stage will receive as input. The props object can reference a manifest entry, such as a row schema from a database. It may also reference a JSON schema of an expected input object. This is helpful for raising warnings during flow runs that data patterns don't match what is expected.
+## Stage behavior
 
-Stage definition YAML follows the following structure:
+Stages are built to be very resilient to intermittent errors that might occur during stage execution. Further, errors are isolated within stages, meaning an error during the execution of one stage will not proliferate to other stages, or even to other executions of the same stage happening simultaneously.
+
+Every stage has default behavior for handling failures or errors with retries and backoff. For a given input, each stage will retry up to 5,000 times with exponential backoff. Retry behavior can be customized for specific stages within the `config` block.
+
+## Stage Visualization
+
+A visualization of how stages are connected through their `out` listings is available on the Flows page. Just navigate to a given Flow and click on the "Flow Visualization" tab.
+
+![](../../assets/images/flow_viz.png)
+
+The result and timing of each stage is available for every Flow run, by clicking on the result of a run in the table on the Flows page, underneath the Flow definition.
+
+![](../../assets/images/flow_run_stages.png)
+
+## List of supported stages
+
+### Triggers
+
+#### Kinesis
+
+This trigger stage will tail a given Kinesis data stream and trigger a Flow run for each record read from the stream. It subscribes to all shards of the stream.
+
+The `action` for this stage is `kinesis`.
+
+The `config` accepts the following values
 
 ```yaml
-name: Unique name for this stage within a Flow
-props:
-  key1: "val 1"
-  key2:
-    - "val 2a"
-    - "val 2b"
-  key3:
-    child: "val 4"
-action: Remap Fields
-out:
-  - Name of a subsequent stage
-  - Name of another subsequent stage
+- name: Read from kinesis
+  action: kinesis
+  config:
+    # REQUIRED, name of the Kinesis stream to read from
+    stream: [Kinesis stream name]
+    # REQUIRED, which portion of the stream to start tailing from at startup
+    cold_start: [trim_horizon | latest]
+  out:
+    - ...
+```
+
+#### Manual
+
+This trigger can be invoked manually to start a Flow run.
+
+The `action` for this stage is `manual`.
+
+No `config` block is necessary for this stage.
+
+```yaml
+- name: Manual start
+  action: manual
+  out:
+    - ...
+```
+
+#### UDP
+
+This trigger can be invoked by receiving a UDP packet to start a Flow run with the contents of the UDP request.
+
+The `action` for this stage is `udp`.
+
+The `config` block accepts the following values
+
+```yaml
+- name: Receive UDP data
+  action: udp
+  config:
+    # REQUIRED, port number for receiving UDP requests, as an integer
+    port: 6553
+  out:
+    - ...
+```
+
+#### Webhook
+
+This trigger will receive HTTPs requests to start a Flow run from each request, and take data from the request body.
+
+The `action` for this stage is `webhook`.
+
+The `config` block accepts the following values
+
+```yaml
+- name: Receive HTTP data
+  action: webhook
+  config:
+    # REQUIRED, host name for receiving HTTPs requests
+    host: https://some.host.name
+  out:
+    - ...
+```
+
+### Built-in Stages
+
+#### Delay
+
+This stage will forward the data received as input, after pausing for a specified amount of time.
+
+The `action` for this stage is `delay`.
+
+The `config` block accepts the following values
+
+```yaml
+- name: Wait for me
+  action: delay
+  config:
+    # REQUIRED, number of seconds to pause, as an integer
+    seconds: 55
+  out:
+    - ...
+```
+
+#### Error
+
+A stage that generates an error whenever it receives events. Useful for debugging.
+
+The `action` for this stage is `error`.
+
+No `config` block is required for this stage
+
+#### JSON transformation
+
+This stage will maps fields from the incoming JSON object into a new outgoing JSON object.
+
+The `action` for this stage is `field_map`.
+
+The `config` block is optional, with the following values. If no `config` block is given, the JSON object is not modified.
+
+```yaml
+- name: Transform JSON
+  action: field_map
+  config:
+    # OPTIONAL, list of JSON fields to copy into the new object. If none, all fields will be copied
+    take:
+      - field1
+      - field2
+    # OPTIONAL, list of JSON fields to exclude from the new object. If none, no fields will be excluded
+    drop:
+      - field3
+      - field4
+    # OPTIONAL, a map of JSON fields to rename, with the key being the input field and the value being the renamed field
+    rename:
+      field5: newname1
+      field6: newname2
+    # OPTIONAL, a map of JSON fields to convert, with the key being the input field and the value being the desired type to convert to
+    convert:
+      field7: int
+      field8: string
+  out:
+    - ...
+```
+
+#### Data filter
+
+This stage will filter out data that matches a given criteria, only data that does _not_ match the criteria will be passed to the next stage.
+
+The `action` for this stage is `filter`
+
+The `config` block accepts the following values
+
+```yaml
+- name: Continue if no match
+  action: filter
+  config:
+    # REQUIRED, a field name or list of field names to filter on by value from the input JSON. If given multiple fields, only one of those fields must match for the run to stop.
+    field:
+      - field1
+      - field2
+    # OPTIONAL, a string that must exactly match the input JSON. If this config is not set, the "pattern" config MUST be set
+    match: some string
+    # OPTIONAL, a regex pattern that must match the input JSON. If this config is not set, the "match" config MUST be set
+    pattern: some regex
+  out:
+    - ...
+```
+
+#### JSON decode
+
+This stage will take binary input and decode it into a JSON string.
+
+The `action` for this stage is `json_decode`.
+
+The `config` block is not necessary for this stage
+
+#### Put Kinesis record
+
+This stage will take an input and put it onto a Kinesis stream as a new record. _NOTE_ this stage is distinct from the previous trigger stage, also called "kinesis".
+
+The `action` for this stage is `kinesis`.
+
+The `config` block accepts the following values
+
+```yaml
+- name: Put kinesis record
+  action: kinesis
+  config:
+    # REQUIRED, the name of the Kinesis stream to put a record on
+    stream: some string
+    # OPTIONAL, a string that corresponds to partitioning of the record
+    partition_key: some string
+  out:
+    - ...
+```
+
+#### Merge data
+
+Add static or secret data into the JSON input and send the combined JSON object as output.
+
+The `action` for this stage is `merge_data`
+
+The `config` block accepts the following values
+
+```yaml
+- name: Add secret to data
+  action: merge_data
+  config:
+    # REQUIRED, an object of data to merge into the input JSON object
+    data:
+      newfield1: some string
+      newfield2: ${secrets.some_secret}
+  out:
+    - ...
+```
+
+#### Noop
+
+A stage that takes no action, and simply forwards along the input.
+
+The `action` for this stage is `noop`
+
+The `config` block is not necessary for this stage
+
+```yaml
+- name: Do nothing
+  action: noop
+  out:
+    - ...
+```
+
+#### Webhook
+
+A stage that sends its input to a specified URL in an HTTPs request.
+
+The `action` for this stage is `webhook`
+
+The `config` block accepts the following values
+
+```yaml
+- name: Publish to API
+  action: webhook
+  config:
+    # REQUIRED, the url to invoke with an HTTPs request
+    url: https://some.other.url
+    # OPTIONAL, the HTTP method to use in the request. Default is "post"
+    method: head | get |delete | trace | options | post | put | patch
+    # OPTIONAL, additional HTTP headers to use with the request.
+    headers:
+    - [Content-type, application/json]
+    - [Bearer, ${secrets.API_KEY}]
+    # OPTIONAL, include the entire input data as the body of the HTTP request. Default is true
+    event_body: true | false
+    # OPTIONAL, a static body to use in the HTTP request.
+    body:
+      field1: some string
+      field2: some string
+    # OPTIONAL, additional params to be included in the body of the HTTP request
+    params:
+      newfield1: some string
 ```
