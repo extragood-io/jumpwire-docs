@@ -5,7 +5,16 @@ parent: Flows
 nav_order: 1
 ---
 
+## Table of contents
+
+{: .no_toc .text-delta }
+
+- TOC
+  {:toc}
+
 # Flow stages
+
+{: .no_toc }
 
 Flows are divided into individual steps called "stages". Stages are discreet units that encapsulate work or logic to handle data passing through an execution run of a Flow. They execute independently and take input from an external source or from a previous stage's output. JumpWire ships with many built-in stages for common operations, or a stage can run custom JavaScript code.
 
