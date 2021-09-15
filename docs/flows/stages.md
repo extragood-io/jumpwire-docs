@@ -88,7 +88,7 @@ The result and timing of each stage is available for every Flow run, by clicking
 
 ### Kinesis
 
-This trigger stage will tail a given Kinesis data stream and trigger a Flow run for each record read from the stream. It subscribes to all shards of the stream.
+A trigger stage that tails a given Kinesis data stream and trigger a Flow run for each record read from the stream. It will tail all shards of the stream.
 
 The `action` for this stage is `kinesis`.
 
@@ -99,24 +99,29 @@ The `config` accepts the following values
   action: kinesis
   config:
     # REQUIRED, name of the Kinesis stream to read from
-    stream: [Kinesis stream name]
+    stream: some_kinesis_string_name
     # REQUIRED, which portion of the stream to start tailing from at startup
-    cold_start: [trim_horizon | latest]
+    cold_start: trim_horizon | latest
   out:
     - ...
 ```
 
-### Manual
+### Kinesis fan-out consumer
 
-This trigger can be invoked manually to start a Flow run.
+A trigger stage that creates a Kinesis fan-out consumer to trigger a Flow run for each record pushed from the stream. It subscribes to all shards of the stream. The consumer that gets
 
-The `action` for this stage is `manual`.
+The `action` for this stage is `kinesis_consumer`.
 
-No `config` block is necessary for this stage.
+The `config` accepts the following values
 
 ```yaml
-- name: Manual start
-  action: manual
+- name: Read from kinesis
+  action: kinesis
+  config:
+    # REQUIRED, name of the Kinesis stream to read from
+    stream: some_kinesis_string_name
+    # REQUIRED, which portion of the stream to start tailing from at startup
+    cold_start: trim_horizon | latest
   out:
     - ...
 ```
@@ -152,7 +157,7 @@ The `config` block accepts the following values
   action: webhook
   config:
     # REQUIRED, host name for receiving HTTPs requests
-    host: https://some.host.name
+    host: some.host.name
   out:
     - ...
 ```
@@ -197,11 +202,11 @@ The `config` block is optional, with the following values. If no `config` block 
 - name: Transform JSON
   action: field_map
   config:
-    # OPTIONAL, list of JSON fields to copy into the new object. If none, all fields will be copied
+    # OPTIONAL, list of JSON fields to copy into the new object. If not specified, all fields will be copied
     take:
       - field1
       - field2
-    # OPTIONAL, list of JSON fields to exclude from the new object. If none, no fields will be excluded
+    # OPTIONAL, list of JSON fields to exclude from the new object. If not specified, no fields will be excluded
     drop:
       - field3
       - field4
@@ -217,9 +222,41 @@ The `config` block is optional, with the following values. If no `config` block 
     - ...
 ```
 
+As an example, this configuration would take the following input:
+
+```json
+{
+  "field1": "foo",
+  "field2": "bar",
+  "field3": "fizz",
+  "field4": "buzz",
+  "field5": "spooky",
+  "field6": "cat",
+  "field7": "01.00",
+  "field8": 9.1
+}
+```
+
+and produce the following output:
+
+```json
+{
+  "field1": "foo",
+  "field2": "bar",
+  "newname1": "spooky",
+  "newname2": "cat",
+  "field7": 1,
+  "field8": "9.1"
+}
+```
+
 ### Data filter
 
-This stage will filter out data that matches a given criteria, only data that does _not_ match the criteria will be passed to the next stage.
+This stage will filter out data that matches a given criteria.
+
+Whether this stage drops or passes matching events depends on the config field `reject_matches`. By default, only data that does **not** match the criteria will be passed to the next stage, i.e. matching events will be dropped.
+
+Also note that either `match` _or_ `pattern` must be set in the config; they cannot both be empty. If both are set, the stage will apply the `match` and ignore the `pattern` (the most strict rule).
 
 The `action` for this stage is `filter`
 
@@ -233,12 +270,32 @@ The `config` block accepts the following values
     field:
       - field1
       - field2
+    # OPTIONAL, a boolean that controls whether matching data is dropped or accepted. The default is true, i.e. drop
+    reject_matches: false
     # OPTIONAL, a string that must exactly match the input JSON. If this config is not set, the "pattern" config MUST be set
     match: some string
     # OPTIONAL, a regex pattern that must match the input JSON. If this config is not set, the "match" config MUST be set
-    pattern: some regex
+    pattern: /some regex/
   out:
     - ...
+```
+
+As an example, the following input would be accepted:
+
+```json
+{
+  "field1": "spooky cat",
+  "field2": "some string"
+}
+```
+
+and the following input would be dropped:
+
+```json
+{
+  "field1": "spooky cat",
+  "field2": "foobar"
+}
 ```
 
 ### JSON decode
@@ -253,7 +310,7 @@ The `config` block is not necessary for this stage
 
 This stage will take an input and put it onto a Kinesis stream as a new record. _NOTE_ this stage is distinct from the previous trigger stage, also called "kinesis".
 
-The `action` for this stage is `kinesis`.
+The `action` for this stage is `put_kinesis`.
 
 The `config` block accepts the following values
 
@@ -289,17 +346,22 @@ The `config` block accepts the following values
     - ...
 ```
 
-### Noop
+### Slack
 
-A stage that takes no action, and simply forwards along the input.
+A stage that sends the event to a Slack channel webhook
 
-The `action` for this stage is `noop`
+The `action` for this stage is `slack`
 
-The `config` block is not necessary for this stage
+The `config` block accepts the following values
 
 ```yaml
-- name: Do nothing
-  action: noop
+- name: Message Slack
+  action: slack
+  config:
+    # REQUIRED, the URL of the slack webhook
+    url: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX
+    # OPTIONAL, a value to change the color of the message displayed in slack. Default is "info"
+    level: error | warn | info | success
   out:
     - ...
 ```
@@ -326,11 +388,7 @@ The `config` block accepts the following values
     - [Bearer, ${secrets.API_KEY}]
     # OPTIONAL, include the entire input data as the body of the HTTP request. Default is true
     event_body: true | false
-    # OPTIONAL, a static body to use in the HTTP request.
-    body:
-      field1: some string
-      field2: some string
-    # OPTIONAL, additional params to be included in the body of the HTTP request
+    # OPTIONAL, additional query params to be included in the HTTP request
     params:
       newfield1: some string
 ```

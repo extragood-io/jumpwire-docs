@@ -13,8 +13,6 @@ The most formal definition of a Flow is as a directed acyclical graph ([DAG](htt
 
 ![](../../assets/images/Flows.svg)
 
-The behavior of each stage defaults to buffering inputs within a given bounds, retry on errors with backoff, collect metrics on runtime stats, and collect logs from stdout/err.
-
 ## Creating a Flow
 
 Flows are created in the JumpWire app by clicking on the "Add Flow" button on the Flows page. Give the Flow a unique name, add tags as necessary, and enter the Flow YAML in the definition text area.
@@ -22,6 +20,11 @@ Flows are created in the JumpWire app by clicking on the "Add Flow" button on th
 After succesfully saving a Flow, a graphical visualization can be seen under the tab "Flow Visualization", which displays the sequence of stages by their name and action.
 
 ![](../../assets/images/flows_page.png)
+
+Coming soon
+{: .label .label-yellow }
+
+Flows can also be managed in GitHub, to support creating and updating Flows as part of an existing CI/CD pipeline. More details coming soon.
 
 ### Flow validation and testing
 
