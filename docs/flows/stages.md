@@ -74,7 +74,7 @@ Stages are built to be very resilient to intermittent errors that might occur du
 
 Every stage has default behavior for handling failures or errors with retries and backoff. For a given input, each stage will retry up to 5,000 times with exponential backoff. Retry behavior can be customized for specific stages within the `config` block.
 
-## Stage Visualization
+## Stage visualization
 
 A visualization of how stages are connected through their `out` listings is available on the Flows page. Just navigate to a given Flow and click on the "Flow Visualization" tab.
 
@@ -185,7 +185,7 @@ The `action` for this stage is `error`.
 
 No `config` block is required for this stage
 
-#### JSON transformation
+### JSON transformation
 
 This stage will maps fields from the incoming JSON object into a new outgoing JSON object.
 
