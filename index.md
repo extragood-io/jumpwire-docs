@@ -14,8 +14,9 @@ JumpWire provides benefits out-of-the-box for these types of workloads. All ETL 
 By using JumpWire, teams gain increased visibility into the characteristics of connected systems such as data types being exchanged as well as rate, volume and availability. This is helpful for monitoring integration health wrt SLAs, and auditing governance of data handling hygene.
 
 To get started with JumpWire, become familiar with the following JumpWire concepts:
- - [Flows]()
- - [Manifests]()
- - [Secrets]()
 
-You can also reach out to the developers of JumpWire in the slack channel [INSERT ME]() or at [EMAIL ADDRESS]()
+- [Flows](flows)
+- [Manifests](manifests)
+- [Secrets](secrets)
+
+You can reach out to the developers of JumpWire by email -- ryan _at_ jumpwire.ai || william _at_ jumpwire.ai

@@ -17,7 +17,7 @@ Manifests are uniquely identified by their name.
 Coming soon
 {: .label .label-yellow }
 
-Please note, much of the functionality of Manifests is still under construction. In future versions, JumpWire will use Manifests as part of Flow definitions, enforce data types and structs, provide AI assistance for writing Flows, and automatically apply data handling policies based on tags.
+**Please note** much of the functionality of Manifests is still under construction. In future versions, JumpWire will use Manifests as part of Flow definitions, enforce data types and structs, provide AI assistance for writing Flows, and automatically apply data handling policies based on tags.
 
 ### Manifest types
 
