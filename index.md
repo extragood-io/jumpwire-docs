@@ -23,7 +23,7 @@ In this documentation, we present the major concepts in JumpWire along with inst
 
 JumpWire defines several terms for managing the entire lifecycle of data integrations.
 
-The sequence of steps for transforming and exchanging data are called ["Flows"](/flows). Each Flow has one or more triggers that provide input data, and each step must complete successfully before the next step is started.
+The sequence of steps for transforming and exchanging data are called ["Flows"](flows). Each Flow has one or more triggers that provide input data, and each step must complete successfully before the next step is started.
 
 Individual steps of a Flow are called ["Stages"](/flows/stages). JumpWire provides pre-built stages for common methods of data manipulation.
 
