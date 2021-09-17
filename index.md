@@ -23,19 +23,19 @@ In this documentation, we present the major concepts in JumpWire along with inst
 
 JumpWire defines several terms for managing the entire lifecycle of data integrations.
 
-The sequence of steps for transforming and exchanging data are called ["Flows"](flows). Each Flow has one or more triggers that provide input data, and each step must complete successfully before the next step is started.
+The sequence of steps for transforming and exchanging data are called ["Flows"](/jumpwire-docs/docs/flows). Each Flow has one or more triggers that provide input data, and each step must complete successfully before the next step is started.
 
-Individual steps of a Flow are called ["Stages"](/flows/stages). JumpWire provides pre-built stages for common methods of data manipulation.
+Individual steps of a Flow are called ["Stages"](/jumpwire-docs/docs/flows/stages). JumpWire provides pre-built stages for common methods of data manipulation.
 
-Connections to systems are defined as ["Manifests"](/manifests). In many cases, a Manifest can also catalogue the schema of data in a given system.
+Connections to systems are defined as ["Manifests"](/jumpwire-docs/docs/manifests). In many cases, a Manifest can also catalogue the schema of data in a given system.
 
-Variables that can be externalized and passed into Flows are called ["Secrets"](/secrets). Secrets can also be used to store connection or authentication parameters.
+Variables that can be externalized and passed into Flows are called ["Secrets"](/jumpwire-docs/docs/secrets). Secrets can also be used to store connection or authentication parameters.
 
 ### Deployment
 
 The recommended method for deploying JumpWire is to be self-hosted directly inside your cloud. JumpWire makes this easy by providing templates and charts for AWS and Kubernetes, as well as pre-built containers for other orchestration platforms.
 
-Deployment templates come with sane defaults, and all options are listed at [Deployments](/deployments)
+Deployment templates come with sane defaults, and all options are listed at [Deployments](/jumpwire-docs/docs/deployments)
 
 ### Next steps
 
