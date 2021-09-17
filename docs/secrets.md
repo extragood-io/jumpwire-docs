@@ -1,7 +1,7 @@
 ---
 layout: default
 title: Secrets
-nav_order: 3
+nav_order: 5
 ---
 
 ## Secrets
