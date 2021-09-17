@@ -7,9 +7,9 @@ permalink: /
 
 ## Welcome to JumpWire
 
-JumpWire is an integration platform that connects internal data to vendor APIs. The best use cases for JumpWire are those where data stored in private databases must be exchanged with third parties. Since JumpWire is designed to be easily self-hosted, the data passing through JumpWire never leaves local networks, and the internal systems JumpWire connects do not need to open connections to the internet. This stands in contrast of hosted integration platforms, which exposes data and connections to an intermediate SaaS vendor.
+JumpWire is an integration platform that connects internal data to vendor APIs. The best use cases for JumpWire are those where data stored in private databases must be exchanged with third parties. Since JumpWire is designed to be easily self-hosted, the data passing through JumpWire never leaves local networks, and the internal systems JumpWire connects do not need to open connections to the internet. This stands in contrast of hosted integration platforms, which exposes data and connections to an intermediate system.
 
-JumpWire also enforces data handling in a consistent manner across connections to third-party APIs. This is especially useful for scenarios where sensitive data, such as PII, is being shared but some fields, for example social security numbers, must be redacted before sharing.
+JumpWire also enforces data handling in a consistent manner across connections to third-party APIs. This is especially useful for scenarios where sensitive data, such as PII, is being shared but some fields, for example social security numbers, must be redacted before sharing. Regardless of where a SSN might appear across different databases, JumpWire can ensure it is always tokenized before sharing externally.
 
 ![](assets/images/jumpwire-graph.svg)
 
@@ -21,11 +21,23 @@ In this documentation, we present the major concepts in JumpWire along with inst
 
 ### Terminology
 
-It can be used to create connections between various systems for the purpose of transferring data between them. JumpWire calls these connections "flows", and they represent a series of steps for extracting, transforming and loading data between systems. Examples of systems to connect include SaaS or vendor APIs, internal databases or data warehouses, streaming data including change data capture, or data from internal tools or services.
+JumpWire defines several terms for managing the entire lifecycle of data integrations.
 
-JumpWire provides benefits out-of-the-box for these types of workloads. All ETL steps are resilient to failure and pre-configured for reties and backoffs. This is useful for scenarios where an API or system may be unavailable for a brief period but then recovers. JumpWire also simplifies ETL programming by abstracting common protocols such as HTTPS and DBMS, in some cases eliminating the need for any custom coding beyond field matching.
+The sequence of steps for transforming and exchanging data are called ["Flows"](/flows). Each Flow has one or more triggers that provide input data, and each step must complete successfully before the next step is started.
 
-By using JumpWire, teams gain increased visibility into the characteristics of connected systems such as data types being exchanged as well as rate, volume and availability. This is helpful for monitoring integration health wrt SLAs, and auditing governance of data handling hygene.
+Individual steps of a Flow are called ["Stages"](/flows/stages). JumpWire provides pre-built stages for common methods of data manipulation.
+
+Connections to systems are defined as ["Manifests"](/manifests). In many cases, a Manifest can also catalogue the schema of data in a given system.
+
+Variables that can be externalized and passed into Flows are called ["Secrets"](/secrets). Secrets can also be used to store connection or authentication parameters.
+
+### Deployment
+
+The recommended method for deploying JumpWire is to be self-hosted directly inside your cloud. JumpWire makes this easy by providing templates and charts for AWS and Kubernetes, as well as pre-built containers for other orchestration platforms.
+
+Deployment templates come with sane defaults, and all options are listed at [Deployments](/deployments)
+
+### Next steps
 
 To get started with JumpWire, become familiar with the following JumpWire concepts:
 
