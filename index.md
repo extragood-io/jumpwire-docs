@@ -45,4 +45,4 @@ To get started with JumpWire, become familiar with the following JumpWire concep
 - [Manifests](manifests)
 - [Secrets](secrets)
 
-You can reach out to the developers of JumpWire by email -- ryan _at_ jumpwire.ai || william _at_ jumpwire.ai
+You can reach out to the developers of JumpWire by email -- ryan _at_ jumpwire.ai \|\| william _at_ jumpwire.ai
