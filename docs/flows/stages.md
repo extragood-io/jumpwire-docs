@@ -392,3 +392,61 @@ The `config` block accepts the following values
     params:
       newfield1: some string
 ```
+
+### Zip
+
+A stage that collects inputs from multiple stages and combines them into a single output. The zip stage buffers inputs into a queue until it has received at least one input from each preceding stage that lists the zip stage as an output. Once an input has been received from all stages, it takes the top input from each queue, adds each to a list, and sends the list on to the `out` stages.
+
+The behavior of the queue buffer is first-in-first-out (FIFO). This means inputs are paired together in the order they are received. Each buffer has a limit set in the stage `config`. Once the buffer limit is reached, the inputs will be sent on to the `out` stage even if there are missing inputs.
+
+The `action` for this stage is `zip`.
+
+The `config` block accepts the following values
+
+```yaml
+- name: Zip inputs together
+  action: zip
+  config:
+    # OPTIONAL, the number of inputs to buffer per incoming stage. Default is 100
+    event_limit: 10
+```
+
+For example, see the following Flow, where the output of two stages are zipped together:
+
+```yaml
+- name: Simple Flow with a zip
+- stages:
+    - name: Read from kinesis
+      action: kinesis
+      config:
+        stream: some_kinesis_string_name
+        cold_start: trim_horizon
+      out:
+        - Zip inputs together
+
+    - name: Receive HTTP data
+      action: webhook
+      config:
+        host: some.host.name
+      out:
+        - Zip inputs together
+
+    - name: Zip inputs together
+      action: zip
+      config:
+        event_limit: 3
+      outs:
+        - Send combined webhook
+
+    - name: Send combined webhook
+```
+
+Given the following timline of inputs:
+
+1. The "Read from kinesis" stage receives input {Ka} and {Kb} from the kinesis stream. Both are sent to the zip stage
+2. The "Receive HTTP data" stage receives input {Wa}, and sends it to the zip stage.
+3. The "Zip inputs together" stage, having received one input from both the kinesis and webhook stage (which lists zip as an `out`), sends [{Ka}, {Wa}] to the stage "Send cobined webhook"
+4. The "Read from kinesis" stage received input {Kc} and {Kd} from the kinesis stream.
+5. The "Zip inputs together" stage sends [{Kb}] to the stage "Send combined webhook", because the event limit (3) has been reached for the buffer for the kinesis stage.
+6. The "Receive HTTP data" stage receives input {Wb}, and sends it to the zip stage.
+7. The "Zip inputs together" stage sends [{Kc}, {Wb}] to the stage "Send cobined webhook"

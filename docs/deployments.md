@@ -12,11 +12,11 @@ JumpWire supports multiple deployment options for flexibility in self-hosting. T
 
 There are two platforms for running JumpWire today, with more being developed - AWS EC2 and container orchestrators. JumpWire publishes pre-built artifacts with all the necessary software for running JumpWire. This includes the execution engine, the JumpWire web portal, and data persistence.
 
-### PostgreSQL
+### PostgreSQL dependency
 
 JumpWire can plug into an existing instance of PostgreSQL for application data persistence. This includes definitions for [Flows](/docs/flows), [Manifests](/docs/manifests), and [Secrets](/docs/secrets), as well as the traces of every Flow execution. **Please note** this database is not primarily used to store event data directly.
 
-Using PostgreSQL is optional but recommended, as it provides the most durable persistence for the JumpWire application data. To enable PostgreSQL, all that is necessary is to provide host and connection details. The JumpWire application will use this configuration to automatically start with the PostgreSQL database being used for storage.
+To enable PostgreSQL, all that is necessary is to provide host and connection details. The JumpWire application will use this configuration to automatically start with the PostgreSQL database being used for storage.
 
 ### AWS EC2
 
@@ -30,9 +30,9 @@ JumpWire provides a Cloudformation template for deploying into an AWS VPC. This 
 | SubnetIds        | Required          | List of VPC subnets to launch the instances in                                                    | n/a         |
 | InstanceType     | Optional          | EC2 instance type for the JumpWire servers                                                        | t2.small    |
 | WebhookPort      | Optional          | Port to use for incoming webhooks                                                                 | 4000        |
-| PostgresHost     | Optional          | Optional hostname of an optional PostgreSQL instance, used for event and flow definitions storage | n/a         |
-| PostgresUser     | Optional          | Optional username for connecting to PostgreSQL                                                    | n/a         |
-| PostgresPassword | Optional          | Optional password for connecting to PostgreSQL                                                    | n/a         |
+| PostgresHost     | Required          | Optional hostname of an optional PostgreSQL instance, used for event and flow definitions storage | n/a         |
+| PostgresUser     | Required          | Optional username for connecting to PostgreSQL                                                    | n/a         |
+| PostgresPassword | Required          | Optional password for connecting to PostgreSQL                                                    | n/a         |
 | MaxSize          | Optional          | The maximum number of instanced in the AutoScalingGroup                                           | 2           |
 | FrontendHost     | Optional          | Hostname or IP address of the JumpWire frontend                                                   | jumpwire.ai |
 
