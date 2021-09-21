@@ -59,7 +59,7 @@ stages:
     action: json_decode
     out:
     - Subsequent stage name 1
-    - Sebsequent stage name 2
+    - Subsequent stage name 2
 
   - name: Subsequent stage name 1
     ...
@@ -108,7 +108,7 @@ The `config` accepts the following values
 
 ### Kinesis fan-out consumer
 
-A trigger stage that creates a Kinesis fan-out consumer to trigger a Flow run for each record pushed from the stream. It subscribes to all shards of the stream. The consumer that gets
+A trigger stage that creates a Kinesis fan-out consumer to trigger a Flow run for each record pushed from the stream. It subscribes to all shards of the stream. The consumer that gets created is called "jumpwire".
 
 The `action` for this stage is `kinesis_consumer`.
 

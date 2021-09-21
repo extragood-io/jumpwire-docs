@@ -9,7 +9,7 @@ has_children: true
 
 A **Flow** is defined as a series of stages for moving data between systems. It starts with a trigger and always completes, typically after transforming data from the trigger and storing or publishing that data. Intermediary stages can filter data to match a criteria, hydrate the data by querying other systems, or add or rename fields. Stages can also fan-out (e.g. map) or combine (e.g. reduce) the results of prior stage executions, allowing for efficient computations.
 
-The most formal definition of a Flow is as a directed acyclical graph ([DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph)), as Flows must be fully traversable, not contain cycles between stages, and terminate.
+The most formal definition of a Flow is as a directed acyclic graph ([DAG](https://en.wikipedia.org/wiki/Directed_acyclic_graph)), as Flows must be fully traversable, not contain cycles between stages, and terminate.
 
 ![](../../assets/images/Flows.svg)
 
@@ -17,7 +17,7 @@ The most formal definition of a Flow is as a directed acyclical graph ([DAG](htt
 
 Flows are created in the JumpWire app by clicking on the "Add Flow" button on the Flows page. Give the Flow a unique name, add tags as necessary, and enter the Flow YAML in the definition text area.
 
-After succesfully saving a Flow, a graphical visualization can be seen under the tab "Flow Visualization", which displays the sequence of stages by their name and action.
+After successfully saving a Flow, a graphical visualization can be seen under the tab "Flow Visualization", which displays the sequence of stages by their name and action.
 
 ![](../../assets/images/flows_page.png)
 
@@ -60,7 +60,7 @@ stages:
     action: json_decode
     out:
     - Subsequent stage name 1
-    - Sebsequent stage name 2
+    - Subsequent stage name 2
 
   - name: Subsequent stage name 1
     ...

@@ -13,7 +13,7 @@ JumpWire also enforces data handling in a consistent manner across connections t
 
 ![](assets/images/jumpwire-graph.svg)
 
-JumpWire creates a graph of logcial steps between data sources and destinations. Each step can manipulate the data passing through it, and steps combine to create powerful transformations to the data.
+JumpWire creates a graph of logical steps between data sources and destinations. Each step can manipulate the data passing through it, and steps combine to create powerful transformations to the data.
 
 The execution of graph steps are distributed across a cluster of servers, allowing JumpWire to scale linearly. Each step, called a "stage", can recover from failures without affecting the performance of the overall system.
 
@@ -27,7 +27,7 @@ The sequence of steps for transforming and exchanging data are called ["Flows"](
 
 Individual steps of a Flow are called ["Stages"](/jumpwire-docs/docs/flows/stages). JumpWire provides pre-built stages for common methods of data manipulation.
 
-Connections to systems are defined as ["Manifests"](/jumpwire-docs/docs/manifests). In many cases, a Manifest can also catalogue the schema of data in a given system.
+Connections to systems are defined as ["Manifests"](/jumpwire-docs/docs/manifests). In many cases, a Manifest can also catalog the schema of data in a given system.
 
 Variables that can be externalized and passed into Flows are called ["Secrets"](/jumpwire-docs/docs/secrets). Secrets can also be used to store connection or authentication parameters.
 
