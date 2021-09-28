@@ -156,8 +156,8 @@ The `config` block accepts the following values
 - name: Receive HTTP data
   action: webhook
   config:
-    # REQUIRED, host name for receiving HTTPs requests
-    host: some.host.name
+    # REQUIRED, URL path for expected HTTP requests
+    path: /incoming/webhook
   out:
     - ...
 ```
@@ -384,8 +384,8 @@ The `config` block accepts the following values
     method: head | get |delete | trace | options | post | put | patch
     # OPTIONAL, additional HTTP headers to use with the request.
     headers:
-    - [Content-type, application/json]
-    - [Bearer, ${secrets.API_KEY}]
+    - Content-Type: application/json
+    - Bearer: ${secrets.API_KEY}
     # OPTIONAL, include the entire input data as the body of the HTTP request. Default is true
     event_body: true | false
     # OPTIONAL, additional query params to be included in the HTTP request
