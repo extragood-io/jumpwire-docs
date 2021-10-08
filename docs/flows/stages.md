@@ -450,3 +450,25 @@ Given the following timline of inputs:
 1. The "Receive HTTP data" stage receives input {Wb}, and sends it to the zip stage.
 1. The "Zip inputs together" stage sends [{Kc}, {Wb}] to the stage "Send cobined webhook"
 1. The "Read from kinesis" stage resends {Kd} to zip, this time successfully as there is space in the buffer
+
+### Reduce
+
+A stage that takes in a list of events and creates emits a single map. The reduce stage can either concatanate all of the data into a field in the map, or merge the data together.
+
+Either `concat_field` must be set, or `merge` must be `true`. However, these are mutally exclusive and `concat_field` cannot be set when `merge` is also `true.
+
+The `action` for this stage is `reduce`
+
+The `config` block accepts the following values
+
+```yaml
+- name: Combine data events
+  action: reduce
+  config:
+    # OPTIONAL, the field to combine all events under
+    concat_field: event_field_name
+    # OPTIONAL, whether to merge all events into a single map. Defaults to false
+    merge: true | false
+  out:
+    - ...
+```
